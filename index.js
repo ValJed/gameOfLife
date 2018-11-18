@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const grid = new Array(height)
 
     for(var y = 0; y < height; y++) {
-      grid[y] = [];
+      grid[y] = []
       for(var x = 0; x < width; x++) {
         grid[y][x] = Math.floor(Math.random() * 2)
       }
@@ -26,14 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
     return grid
   }
 
-  const drawCells = (ctx, grid) => {
+  const drawCells = (ctx, cellSize, grid) => {
+    console.log('ctx ===> ', ctx)
     const height = grid.length
     const width = grid[0].length
 
     for(let y = 0; y < height; y++) {
       for(let x = 0; x < width; x++) {
         if (grid[y][x] === 1) {
-          ctx.fillRect(x * 4, y * 4, 4, 4)
+          ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
         }
       }
     }
@@ -47,19 +48,17 @@ document.addEventListener("DOMContentLoaded", () => {
     ] : []
   }
 
-  const alterGrid = (grid) => {
+  const modifyGrid = (grid) => {
     const height = grid.length
     const width = grid[0].length
     const newGrid = createNudeGrid(width, height)
-    // console.log('newGrid ===> ', newGrid)
     for(let y = 0; y < height; y++) {
       for(let x = 0; x < width; x++) {
         const currentLine = []
-        const cell = grid[y][x]
         if (grid[y][x - 1] !== undefined) {
           currentLine.push(grid[y][x - 1])
         }
-        currentLine.push(grid[y][x])
+        // currentLine.push(grid[y][x])
         if (grid[y][x + 1] !== undefined) {
           currentLine.push(grid[y][x + 1])
         }
@@ -67,37 +66,40 @@ document.addEventListener("DOMContentLoaded", () => {
         const prevLine = lineExtractor(grid[y - 1], x)
         const nextLine = lineExtractor(grid[y + 1], x)
 
-        // console.log('prevLine ===> ', prevLine)
-        // console.log('currentLine ===> ', currentLine)
-        // console.log('nextLine ===> ', nextLine)
-
         const neighbors = prevLine.concat(currentLine, nextLine)
         const aliveCells = neighbors.filter((n) => n === 1)
-        // console.log('aliveCells ===> ', aliveCells)
 
         if (grid[y][x] === 0){
           if ( aliveCells.length === 3) {
             newGrid[y][x] = 1
-          } else {
-            newGrid[y][x] = 0
           }
         } else {
-          if (aliveCells.length !== 2 && aliveCells.length !== 3) {
-            newGrid[y][x] = 0
-          } else {
+          if (aliveCells.length === 2 || aliveCells.length === 3) {
             newGrid[y][x] = 1
           }
         }
       }
     }
-    // console.log('newGrid ===> ', newGrid)
+    return newGrid
   }
 
-  const grid = createGrid(10, 10)
-  drawCells(canvas2d, grid)
+  const alterGrid = (ctx, grid, gridSize) => {
+    grid = modifyGrid(grid.slice(0))
+    ctx.clearRect(0, 0, gridSize, gridSize)
+    drawCells(canvas2d, cellSize, grid)
+  }
 
+  const cellSize = 5
+  const gridLength = 200
+  const gridSize = gridLength * cellSize
+  let grid = createGrid(gridLength, gridLength, cellSize)
+  drawCells(canvas2d, cellSize, grid)
   document.querySelector('.button').addEventListener('click', () => {
-    alterGrid(grid)
+    alterGrid(canvas2d, grid, gridSize)
   })
+
+  setInterval(() => {
+    alterGrid(canvas2d, grid, gridSize)
+  }, 200)
 
 })
