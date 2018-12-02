@@ -26,12 +26,26 @@ document.addEventListener("DOMContentLoaded", () => {
     return grid
   }
 
+  // const drawGrid = (ctx, cellSize, grid) => {
+
+  //   for(let y = 0; y < 0; y++)
+
+  // }
+
   const drawCells = (ctx, cellSize, grid) => {
-    console.log('ctx ===> ', ctx)
     const height = grid.length
     const width = grid[0].length
 
     for(let y = 0; y < height; y++) {
+      ctx.strokeStyle = 'black'
+      ctx.beginPath()
+      ctx.moveTo(0, y * cellSize)
+      ctx.lineTo(width * cellSize, y * cellSize)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.moveTo(y * cellSize, 0)
+      ctx.lineTo(y * cellSize, width * cellSize)
+      ctx.stroke()
       for(let x = 0; x < width; x++) {
         if (grid[y][x] === 1) {
           ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
@@ -89,11 +103,33 @@ document.addEventListener("DOMContentLoaded", () => {
     drawCells(canvas2d, cellSize, grid)
   }
 
-  const cellSize = 5
-  const gridLength = 200
+  const cellSize = 15
+  const gridLength = 100
   const gridSize = gridLength * cellSize
   let grid = createGrid(gridLength, gridLength, cellSize)
+  // drawGrid(canvas2d, cellSize, grid)
   drawCells(canvas2d, cellSize, grid)
+
+  canvas.addEventListener('click', (event) => {
+    const posX = event.offsetX
+    const posY = event.offsetY
+
+    for (let cell = 0; cell <= gridLength; cell++) {
+      const cellPosX = cell * cellSize
+
+      // if () {
+
+      // }
+      console.log('posX ===> ', posX)
+      console.log('cellPosX ===> ', cellPosX)
+    }
+
+    const heightX = posX * cellSize
+
+    console.log('X ===> ', posX)
+    console.log('Y ===> ', posY)
+  })
+
   document.querySelector('.button').addEventListener('click', () => {
     alterGrid(canvas2d, grid, gridSize)
   })
